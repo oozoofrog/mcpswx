@@ -310,7 +310,7 @@
         "expect": "에러 메시지 출력 + exit:1 (crash 없음)"
       }
     ],
-    "status": "pending",
+    "status": "built",
     "reference": null,
     "priority": 8,
     "scores": null
