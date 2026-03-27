@@ -1,0 +1,755 @@
+[
+  {
+    "id": "F001",
+    "category": "config",
+    "description": "Package.swift 생성: swift-tools-version 6.2, 단일 executable target 'swiftmcp', 의존성 ArgumentParser. Sources/swiftmcp/ 디렉토리 구조 포함. Swift 6.2 strict concurrency 설정.",
+    "verification": "swift build -c debug 성공, 빌드 결과물 .build/debug/swiftmcp 존재. swift-tools-version이 6.2이어야 하고 swiftSettings에 strictConcurrency 또는 Swift 6 mode 설정 포함.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift build 2>&1",
+        "expect": "Build complete! 출력, 에러 없음"
+      },
+      {
+        "action": "run_command",
+        "command": "test -f /Volumes/eyedisk/develop/oozoofrog/swiftmcp/.build/debug/swiftmcp && echo EXIST || echo MISSING",
+        "expect": "EXIST 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "head -1 /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Package.swift",
+        "expect": "// swift-tools-version: 6.2 또는 6.0 이상 포함"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -E 'swiftLanguageVersion|swiftSettings|.enableExperimentalFeature|StrictConcurrency' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Package.swift | head -5",
+        "expect": "Swift 6 concurrency 설정 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "swift build 2>&1 | grep -E 'error:|warning:' | grep -v 'note:' | head -10",
+        "expect": "에러 0건 (경고는 허용)"
+      }
+    ],
+    "status": "built",
+    "reference": null,
+    "priority": 1,
+    "scores": null
+  },
+  {
+    "id": "F002",
+    "category": "config",
+    "description": "레지스트리 JSON Codable 스키마 구현: RegistryEntry, ServerEntry, PlatformEntry, SourceEntry struct. Sendable 준수. version, servers 딕셔너리, platforms, source 필드 포함.",
+    "verification": "swift build 성공. RegistryEntry가 Sendable 준수. registry.json의 swift-yf-tools 엔트리가 정상 디코딩됨. 필수 필드 누락 시 디코딩 에러 발생.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift build 2>&1 | tail -3",
+        "expect": "Build complete!"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rE 'Sendable|struct RegistryEntry|struct ServerEntry|struct PlatformEntry|struct SourceEntry' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -10",
+        "expect": "Sendable 준수 struct 4종 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift test --filter RegistryEntry 2>&1 | tail -5",
+        "expect": "테스트 통과 또는 테스트 없으면 Build complete!"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && cat registry.json | python3 -c \"import json,sys; d=json.load(sys.stdin); print('version:', d.get('version')); print('servers:', list(d.get('servers',{}).keys()))\"",
+        "expect": "version: 1 출력, servers 목록에 swift-yf-tools 포함"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -E 'var version|var servers|var repo|var description|var executable|var platforms|var source' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ -r | head -15",
+        "expect": "version, servers, repo, description, executable, platforms, source 필드 모두 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 2,
+    "scores": null
+  },
+  {
+    "id": "F003",
+    "category": "data",
+    "description": "RegistryClient 구현: GitHub raw URL에서 registry.json fetch (URLSession async/await). 로컬 캐시 저장/로드 (~/.swiftmcp/registry/registry.json). 캐시 TTL 1시간. nonisolated struct.",
+    "verification": "swift build 성공. RegistryClient가 nonisolated struct. 캐시 파일 경로 ~/.swiftmcp/registry/registry.json 사용. TTL 1시간 로직 코드에 존재. 캐시 유효 시 네트워크 미호출.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift build 2>&1 | tail -3",
+        "expect": "Build complete!"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'nonisolated' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i 'registryclient\\|RegistryClient' | head -5",
+        "expect": "RegistryClient가 nonisolated struct 선언"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'swiftmcp/registry\\|registry.json\\|\\.swiftmcp' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "~/.swiftmcp/registry/registry.json 경로 참조 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'TTL\\|3600\\|timeInterval\\|timeIntervalSince\\|60 \\* 60' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "TTL 1시간(3600초) 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'raw.githubusercontent.com.*registry.json\\|swiftmcp/main/registry' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -3",
+        "expect": "GitHub raw URL 하드코딩 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'catch\\|Error\\|fallback\\|loadCache\\|cached' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i 'registry' | head -10",
+        "expect": "네트워크 실패 시 캐시 폴백 로직 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 3,
+    "scores": null
+  },
+  {
+    "id": "F004",
+    "category": "data",
+    "description": "BinaryResolver 구현: GitHub Releases API (api.github.com/repos/{owner}/{repo}/releases/latest)에서 latest release 조회. 플랫폼 자동 감지 (arch 명령 기반 arm64/x86_64). 해당 artifact URL 추출. nonisolated struct.",
+    "verification": "swift build 성공. BinaryResolver가 nonisolated struct. arch 명령 기반 플랫폼 감지 로직 존재. api.github.com releases 엔드포인트 사용. 플랫폼 불일치 시 에러 처리 존재.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift build 2>&1 | tail -3",
+        "expect": "Build complete!"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'nonisolated' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i 'binaryresolver\\|BinaryResolver' | head -3",
+        "expect": "BinaryResolver가 nonisolated struct 선언"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'api.github.com/repos\\|releases/latest' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -3",
+        "expect": "GitHub Releases API URL 사용"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'arch\\|arm64\\|x86_64\\|uname\\|ProcessInfo' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -iv 'test\\|spec' | head -10",
+        "expect": "arm64/x86_64 플랫폼 감지 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'platformNotSupported\\|notFound\\|noArtifact\\|throw.*platform\\|unsupportedPlatform' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "플랫폼 미지원 에러 케이스 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'browser_download_url\\|assets\\|tag_name' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "GitHub Releases API 응답 파싱 필드 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 4,
+    "scores": null
+  },
+  {
+    "id": "F005",
+    "category": "data",
+    "description": "CacheManager 구현: ~/.swiftmcp/cache/{name}/{version}/ 경로 관리. binary 존재 여부 확인. tar.gz 다운로드 후 압축 해제 (Foundation Process: tar -xzf). binary 실행 권한 설정 (chmod +x). nonisolated struct.",
+    "verification": "swift build 성공. CacheManager가 nonisolated struct. ~/.swiftmcp/cache/{name}/{version}/ 경로 패턴 사용. tar -xzf Process 호출 존재. chmod +x 또는 FileManager permissions 설정 존재. 압축 해제 실패 시 에러 처리 존재.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift build 2>&1 | tail -3",
+        "expect": "Build complete!"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'nonisolated' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i 'cachemanager\\|CacheManager' | head -3",
+        "expect": "CacheManager가 nonisolated struct 선언"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn '\\.swiftmcp/cache\\|swiftmcp.*cache' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "~/.swiftmcp/cache/ 경로 패턴 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'tar.*-xzf\\|tar.*xzf\\|Process.*tar' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "tar -xzf 압축 해제 Process 호출 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'chmod\\|posixPermissions\\|0o755\\|0755\\|executableFile' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "실행 권한 설정 로직 존재 (chmod +x 또는 posixPermissions)"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'extractionFailed\\|downloadFailed\\|throw.*decompress\\|throw.*extract' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "압축 해제/다운로드 실패 에러 케이스 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 5,
+    "scores": null
+  },
+  {
+    "id": "F006",
+    "category": "logic",
+    "description": "ProcessRunner 구현: Process(executableURL:) 기반 stdio passthrough 실행. arguments 전달. waitUntilExit() 후 terminationStatus 반환. MCP 서버 ↔ Claude 직접 통신을 위한 stdin/stdout/stderr 상속. nonisolated struct.",
+    "verification": "swift build 성공. ProcessRunner가 nonisolated struct. stdin/stdout/stderr .inherit 설정 코드 존재. terminationStatus를 호출자에게 반환. 비정상 종료(exit code != 0) 시 상위 전달 로직 존재.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift build 2>&1 | tail -3",
+        "expect": "Build complete!"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'nonisolated' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i 'processrunner\\|ProcessRunner' | head -3",
+        "expect": "ProcessRunner가 nonisolated struct 선언"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn '\\.inherit\\|standardInput.*inherit\\|standardOutput.*inherit\\|standardError.*inherit' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "stdin/stdout/stderr .inherit 설정 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'terminationStatus\\|waitUntilExit\\|exit.*code\\|exitCode' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "waitUntilExit + terminationStatus 반환 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'executableURL\\|Process(' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -v test | head -5",
+        "expect": "Process(executableURL:) 초기화 패턴 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp run --help 2>&1; echo \"exit:$?\"",
+        "expect": "run 커맨드 도움말 출력 (exit:0 또는 exit:1 허용, 단 crash 없음)"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 6,
+    "scores": null
+  },
+  {
+    "id": "F007",
+    "category": "ui",
+    "description": "RunCommand 구현: `swiftmcp run <name> [-- args...]` ArgumentParser 커맨드. 레지스트리 조회 → BinaryResolver → CacheManager (캐시 hit 시 즉시 실행) → 다운로드 → ProcessRunner 실행 전체 플로우. stderr에 진행 상황 출력 (Downloading..., Running...). stdin/stdout은 MCP 통신용으로 clean 유지.",
+    "verification": "`swiftmcp run --help` 성공. 존재하지 않는 패키지 실행 시 stderr에 에러 메시지 + exit code 1. stderr 출력은 ANSI 코드 포함 가능하나 stdout은 clean 유지 (MCP 통신용). `--` 이후 인수가 하위 프로세스로 전달되는 로직 존재.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp run --help 2>&1",
+        "expect": "run 커맨드 사용법 출력 (NAME argument 포함)"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp run __nonexistent_package__ 2>&1; echo \"exit:$?\"",
+        "expect": "에러 메시지 출력 + exit:1 (또는 레지스트리 fetch 시도 메시지)"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'stderr\\|standardError.*write\\|FileHandle.*standardError' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i 'download\\|running\\|progress' | head -5",
+        "expect": "진행 상황을 stderr에 출력하는 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'originalArguments\\|arguments.*pass\\|passthroughArguments\\|-- ' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "'--' 이후 인수 전달 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'cacheHit\\|cache.*hit\\|already.*cached\\|Using cached' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "캐시 hit 시 즉시 실행 분기 로직 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 7,
+    "scores": null
+  },
+  {
+    "id": "F008",
+    "category": "ui",
+    "description": "InstallCommand 구현: `swiftmcp install <name>` ArgumentParser 커맨드. RunCommand와 동일한 다운로드 플로우이나 실행하지 않고 캐시 저장만 수행. 설치 완료 후 binary 경로 출력.",
+    "verification": "`swiftmcp install --help` 성공. 설치 후 MCP 서버 프로세스가 시작되지 않음 (ProcessRunner 미호출). 완료 후 설치 경로를 stdout 또는 stderr에 출력. 이미 설치된 경우 처리 로직 존재.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp install --help 2>&1",
+        "expect": "install 커맨드 사용법 출력 (NAME argument 포함)"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'class InstallCommand\\|struct InstallCommand' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -3",
+        "expect": "InstallCommand 타입 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'Installed\\|Installed to\\|install.*path\\|cache.*path\\|binaryPath' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i install | head -5",
+        "expect": "설치 완료 후 경로 출력 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -A 30 'struct InstallCommand\\|class InstallCommand' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ -r | grep -i 'processrunner\\|run.*process\\|launch' | head -3",
+        "expect": "InstallCommand 내부에 ProcessRunner.run() 호출 없음"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp install __nonexistent_package__ 2>&1; echo \"exit:$?\"",
+        "expect": "에러 메시지 출력 + exit:1 (crash 없음)"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 8,
+    "scores": null
+  },
+  {
+    "id": "F009",
+    "category": "ui",
+    "description": "ListCommand 구현: `swiftmcp list` ArgumentParser 커맨드. ~/.swiftmcp/cache/ 디렉토리를 스캔하여 설치된 패키지 이름, 버전, binary 경로를 테이블 형식으로 출력. 아무것도 없으면 'No packages installed' 출력.",
+    "verification": "`swiftmcp list` 실행 시 crash 없음. 빈 캐시 상태에서 'No packages installed' 유사 문구 출력. ~/.swiftmcp/cache/ 경로 스캔 로직 존재. --json 플래그 지원 시 JSON 출력.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp list 2>&1; echo \"exit:$?\"",
+        "expect": "crash 없음, 목록 또는 'No packages installed' 유사 문구 출력, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp list --help 2>&1",
+        "expect": "list 커맨드 사용법 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'No packages\\|no packages\\|nothing installed\\|empty' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -3",
+        "expect": "빈 상태 메시지 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn '\\.swiftmcp/cache\\|FileManager.*cache\\|contentsOfDirectory.*cache' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i list | head -5",
+        "expect": "ListCommand에서 캐시 디렉토리 스캔 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "mkdir -p ~/.swiftmcp/cache/test-dummy/1.0.0 && touch ~/.swiftmcp/cache/test-dummy/1.0.0/test-dummy && cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp list 2>&1; rm -rf ~/.swiftmcp/cache/test-dummy",
+        "expect": "test-dummy 항목이 목록에 표시됨"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 9,
+    "scores": null
+  },
+  {
+    "id": "F010",
+    "category": "ui",
+    "description": "SearchCommand 구현: `swiftmcp search <query>` ArgumentParser 커맨드. 레지스트리에서 name/description 필드를 대소문자 무관 포함 검색. 결과를 name, description, repo 형식으로 출력. 결과 없으면 'No results found' 출력.",
+    "verification": "`swiftmcp search yahoo` 실행 시 swift-yf-tools 항목 출력. `swiftmcp search YAHOO` (대문자) 동일 결과. `swiftmcp search __nonexistent__` 시 'No results found' 유사 문구 출력. 검색은 name과 description 필드 모두 대상.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp search yahoo 2>&1; echo \"exit:$?\"",
+        "expect": "swift-yf-tools 항목 포함 출력, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp search YAHOO 2>&1",
+        "expect": "대소문자 무관하게 swift-yf-tools 항목 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp search __zzz_nonexistent_zzz__ 2>&1; echo \"exit:$?\"",
+        "expect": "No results found 유사 문구 출력, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'lowercased\\|caseInsensitive\\|localizedCaseInsensitive\\|lowercased().*contains' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "대소문자 무관 검색 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp search swiftmcp 2>&1",
+        "expect": "swiftmcp 자체 항목 출력 (self-hosting 레지스트리 확인)"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 10,
+    "scores": null
+  },
+  {
+    "id": "F011",
+    "category": "ui",
+    "description": "CacheCommand + clean 서브커맨드 구현: `swiftmcp cache clean [--name <name>]` ArgumentParser 커맨드. name 지정 시 해당 패키지 캐시만 삭제. name 미지정 시 ~/.swiftmcp/cache/ 전체 삭제. 삭제 전 확인 프롬프트 (--yes 플래그로 건너뜀).",
+    "verification": "`swiftmcp cache clean --help` 성공. --yes 플래그 없이 실행 시 프롬프트 요청(stdin이 tty 아닌 경우에는 abort 또는 에러). --yes 플래그로 삭제 수행. --name 지정 시 해당 디렉토리만 삭제. 전체 삭제 시 ~/.swiftmcp/cache/ 하위 모두 제거.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp cache clean --help 2>&1",
+        "expect": "--yes 및 --name 옵션 포함 도움말 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "mkdir -p ~/.swiftmcp/cache/test-clean-pkg/1.0.0 && touch ~/.swiftmcp/cache/test-clean-pkg/1.0.0/binary && cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp cache clean --name test-clean-pkg --yes 2>&1; echo \"exit:$?\"",
+        "expect": "삭제 성공 메시지 출력, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "test -d ~/.swiftmcp/cache/test-clean-pkg && echo STILL_EXISTS || echo DELETED",
+        "expect": "DELETED 출력 (디렉토리 삭제됨)"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn '\\-\\-yes\\|skipConfirmation\\|force.*delete\\|confirmed' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "--yes 플래그 처리 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "echo '' | cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp cache clean 2>&1; echo \"exit:$?\"",
+        "expect": "확인 프롬프트 출력 또는 비TTY 환경에서 abort 메시지 (crash 없음)"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 11,
+    "scores": null
+  },
+  {
+    "id": "F012",
+    "category": "ui",
+    "description": "RegistryCommand 구현: `swiftmcp registry` 서브커맨드 그룹. `swiftmcp registry show` — 현재 레지스트리 URL, 캐시 경로, 서버 수 출력. `swiftmcp registry update` — 레지스트리 강제 갱신 (캐시 무시 re-fetch).",
+    "verification": "`swiftmcp registry show` 성공 — URL과 서버 수 포함 출력. `swiftmcp registry update` 성공 — 완료 메시지 출력, 이후 registry.json 타임스탬프 갱신. 네트워크 없을 때 update 실패 시 에러 메시지 출력.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp registry --help 2>&1",
+        "expect": "show, update 서브커맨드 목록 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp registry show 2>&1; echo \"exit:$?\"",
+        "expect": "레지스트리 URL 포함 출력, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp registry update 2>&1; echo \"exit:$?\"",
+        "expect": "업데이트 완료 메시지 또는 네트워크 에러 메시지, exit:0 또는 1 (crash 없음)"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'raw.githubusercontent.com\\|registryURL\\|registry.*url\\|URL.*registry' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i show | head -5",
+        "expect": "show 커맨드에서 레지스트리 URL 출력 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'force.*fetch\\|ignoreCache\\|forceUpdate\\|forceFetch\\|ttl.*0\\|bypassCache' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "캐시 무시 강제 갱신 로직 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 12,
+    "scores": null
+  },
+  {
+    "id": "F013",
+    "category": "logic",
+    "description": "SourceResolver 구현 (소스 폴백 빌드): 레지스트리의 source 필드를 사용해 git clone → swift build -c release 실행. binary를 캐시에 복사. CacheManager와 통합. Process 기반 async 실행. nonisolated struct.",
+    "verification": "swift build 성공. SourceResolver가 nonisolated struct. git clone + swift build -c release Process 호출 로직 존재. 빌드 실패 시 에러 처리. 임시 디렉토리 사용 후 캐시에 복사 로직 존재.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift build 2>&1 | tail -3",
+        "expect": "Build complete!"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'nonisolated' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i 'sourceresolver\\|SourceResolver' | head -3",
+        "expect": "SourceResolver가 nonisolated struct 선언"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'git.*clone\\|Process.*git\\|git clone' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "git clone Process 호출 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'swift.*build.*release\\|\\-c.*release\\|release.*build' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "swift build -c release 호출 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'sourceBuildFailed\\|buildFailed\\|throw.*build\\|throw.*source' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "소스 빌드 실패 에러 케이스 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'buildPath\\|product.*field\\|source.*field' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "레지스트리 source.buildPath + source.product 필드 사용 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 13,
+    "scores": null
+  },
+  {
+    "id": "F014",
+    "category": "config",
+    "description": "registry.json 초기 파일 생성: swiftmcp 저장소 루트에 registry.json 포함. swift-yf-tools와 swiftmcp 자체(self-hosting) 엔트리 포함. GitHub Releases artifact 네이밍 컨벤션 문서화.",
+    "verification": "registry.json이 JSONDecoder로 정상 디코딩됨. swiftmcp와 swift-yf-tools 두 엔트리 모두 포함. servers 딕셔너리에 두 항목의 repo/platforms/source 필드가 스펙 스키마를 준수. `swiftmcp search swiftmcp`와 `swiftmcp search yahoo` 모두 결과 반환.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "test -f /Volumes/eyedisk/develop/oozoofrog/swiftmcp/registry.json && echo EXIST || echo MISSING",
+        "expect": "EXIST 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "python3 -c \"import json; d=json.load(open('/Volumes/eyedisk/develop/oozoofrog/swiftmcp/registry.json')); servers=list(d.get('servers',{}).keys()); print('servers:', servers); print('version:', d.get('version'))\"",
+        "expect": "version: 1, servers 목록에 swift-yf-tools와 swiftmcp 모두 포함"
+      },
+      {
+        "action": "run_command",
+        "command": "python3 -c \"import json; d=json.load(open('/Volumes/eyedisk/develop/oozoofrog/swiftmcp/registry.json')); [print(k, list(v.keys())) for k,v in d.get('servers',{}).items()]\"",
+        "expect": "각 엔트리에 repo, description, executable, platforms, source 키 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp search swiftmcp 2>&1; echo \"exit:$?\"",
+        "expect": "swiftmcp 항목 출력 (self-hosting 확인), exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp search yahoo 2>&1; echo \"exit:$?\"",
+        "expect": "swift-yf-tools 항목 출력, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "python3 -c \"import json; d=json.load(open('/Volumes/eyedisk/develop/oozoofrog/swiftmcp/registry.json')); s=d['servers']; [print(k, ':', s[k].get('platforms',{}).keys()) for k in s]\"",
+        "expect": "macos-arm64, macos-x86_64 플랫폼 키 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 14,
+    "scores": null
+  },
+  {
+    "id": "F015",
+    "category": "logic",
+    "description": "에러 처리 및 진단 메시지: SwiftMCPError enum (네트워크 에러, 레지스트리 미등록, 플랫폼 미지원, 다운로드 실패, 압축 해제 실패, 소스 빌드 실패). stderr에 사람이 읽기 좋은 에러 메시지 출력. exit code 1 반환. `swiftmcp run unknown-package` 시 'Package not found in registry. Try: swiftmcp search <query>' 안내.",
+    "verification": "SwiftMCPError enum 존재 및 최소 5개 케이스 포함. `swiftmcp run __nonexistent__` 실행 시 exit code 1, stderr에 에러 메시지. 에러 메시지가 stdout이 아닌 stderr로 출력됨을 검증 (stdout은 clean 유지). `swiftmcp --help` 시 전체 서브커맨드 목록 출력.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "grep -rn 'enum SwiftMCPError\\|enum.*MCPError\\|SwiftMCPError' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "SwiftMCPError enum 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'case ' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | grep -i 'mcperror\\|SwiftMCPError' | wc -l",
+        "expect": "5 이상 (5개 이상의 에러 케이스)"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp run __nonexistent_xyz__ 2>/tmp/stderr_test.txt; echo \"exit:$?\"; cat /tmp/stderr_test.txt",
+        "expect": "exit:1, stderr에 not found 또는 not registered 유사 에러 메시지"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && stdout=$(.build/debug/swiftmcp run __nonexistent_xyz__ 2>/dev/null); echo \"stdout_content:'$stdout'\"",
+        "expect": "stdout_content:'' 또는 빈 문자열 (stdout clean 유지)"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp --help 2>&1",
+        "expect": "run, install, list, search, cache, registry 서브커맨드 모두 목록에 표시"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'Try: swiftmcp search\\|try.*swiftmcp search\\|Package not found\\|not found in registry' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -3",
+        "expect": "'Package not found' + 'swiftmcp search' 안내 메시지 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 15,
+    "scores": null
+  },
+  {
+    "id": "F016",
+    "category": "ui",
+    "description": "swiftmcp init 인터랙티브 TUI 프로젝트 생성기: 프로젝트 이름, 설명, tool 템플릿 선택(echo/http-fetch/file-read/custom), GitHub Actions 포함 여부, 레지스트리 등록 준비 여부를 인터랙티브 프롬프트로 수집. ANSI 박스/컬러 출력. 생성물: Package.swift, main.swift(MCP 서버 스켈레톤), MCPProtocol.swift(JSON-RPC 기본 구현), Tools/SampleTool.swift, .github/workflows/release.yml, registry-entry.json, README.md, .gitignore. 생성 후 swift build 자동 검증.",
+    "verification": "`swiftmcp init --help` 성공. `--non-interactive` 플래그 또는 `--name` 인수로 비대화형 실행 가능. 생성된 프로젝트에서 swift build 성공. 생성물 7종 (Package.swift, main.swift, MCPProtocol.swift, Tools/SampleTool.swift, .github/workflows/release.yml, registry-entry.json, README.md) 모두 존재.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp init --help 2>&1",
+        "expect": "--name 및 --non-interactive 옵션 포함 도움말 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /tmp && rm -rf swiftmcp-test-init && /Volumes/eyedisk/develop/oozoofrog/swiftmcp/.build/debug/swiftmcp init --name swiftmcp-test-init --non-interactive 2>&1; echo \"exit:$?\"",
+        "expect": "프로젝트 생성 완료 메시지, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "for f in Package.swift Sources/swiftmcp-test-init/main.swift Sources/swiftmcp-test-init/MCPProtocol.swift Sources/swiftmcp-test-init/Tools/SampleTool.swift .github/workflows/release.yml registry-entry.json README.md .gitignore; do test -f /tmp/swiftmcp-test-init/$f && echo \"OK: $f\" || echo \"MISSING: $f\"; done",
+        "expect": "모든 파일 OK: 출력 (MISSING 없음)"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /tmp/swiftmcp-test-init && swift build 2>&1 | tail -5",
+        "expect": "Build complete! (생성된 프로젝트 빌드 성공)"
+      },
+      {
+        "action": "run_command",
+        "command": "test -f /tmp/swiftmcp-test-init/.build/debug/swiftmcp-test-init && echo BINARY_EXIST || echo BINARY_MISSING",
+        "expect": "BINARY_EXIST 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "rm -rf /tmp/swiftmcp-test-init",
+        "expect": "정리 완료 (검증 후 임시 디렉토리 삭제)"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 16,
+    "scores": null
+  },
+  {
+    "id": "F017",
+    "category": "ui",
+    "description": "swiftmcp 인자 없이 실행 시 인터랙티브 가이드 메뉴: 방향키로 선택 가능한 메뉴(MCP 서버 실행/만들기/관리/검색/MCP 서버로 시작). ANSI escape 기반 커서 이동, 하이라이트. 선택 시 해당 서브커맨드로 분기. --no-interactive 시 기존 --help 출력.",
+    "verification": "`swiftmcp --help` 실행 시 crash 없음 + 전체 서브커맨드 목록 출력. 비TTY(pipe) 환경에서 인자 없이 실행 시 crash 없이 도움말 또는 메뉴 텍스트 출력. ANSI escape 코드 사용 여부는 isatty 감지에 따라 결정됨 (코드 레벨 검증).",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp --help 2>&1; echo \"exit:$?\"",
+        "expect": "서브커맨드 목록 출력, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "echo '' | /Volumes/eyedisk/develop/oozoofrog/swiftmcp/.build/debug/swiftmcp 2>&1; echo \"exit:$?\"",
+        "expect": "crash 없음 (메뉴 또는 도움말 출력), exit:0 또는 exit:1 허용"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'isatty\\|TERM\\|isTTY\\|tty.*detect\\|isTerminal' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "isatty 또는 tty 감지 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'ANSI\\|\\\\u001b\\|\\\\033\\|escape.*code\\|ESC\\[' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "ANSI escape 코드 사용 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'no.*interactive\\|nonInteractive\\|noInteractive\\|--no-interactive' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -3",
+        "expect": "--no-interactive 또는 유사 플래그 처리 로직 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 17,
+    "scores": null
+  },
+  {
+    "id": "F018",
+    "category": "logic",
+    "description": "swiftmcp mcp 서브커맨드: swiftmcp 자체를 MCP 서버로 실행. stdio JSON-RPC 2.0 프로토콜. 제공 tools: run(서버 실행), install(설치), search(검색), list(목록), init(프로젝트 생성), cache_clean(캐시 정리), registry_update(레지스트리 갱신) 7개. initialize → tools/list → tools/call 핸들링. Agent가 claude mcp add swiftmcp -- swiftmcp mcp로 등록 후 모든 기능 사용 가능.",
+    "verification": "`swiftmcp mcp --help` 성공. JSON-RPC initialize 요청에 올바른 응답 반환. tools/list 응답에 7개 tool 정의 포함. 잘못된 JSON 입력 시 에러 응답 반환 (crash 없음). tools/call로 search 호출 시 결과 반환.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp mcp --help 2>&1; echo \"exit:$?\"",
+        "expect": "mcp 커맨드 도움말 출력, exit:0"
+      },
+      {
+        "action": "run_command",
+        "command": "echo '{\"jsonrpc\":\"2.0\",\"method\":\"initialize\",\"id\":1,\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{}}}' | /Volumes/eyedisk/develop/oozoofrog/swiftmcp/.build/debug/swiftmcp mcp 2>/dev/null",
+        "expect": "JSON 응답 출력 (serverInfo 또는 result 필드 포함)"
+      },
+      {
+        "action": "run_command",
+        "command": "printf '{\"jsonrpc\":\"2.0\",\"method\":\"initialize\",\"id\":1,\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{}}}\\n{\"jsonrpc\":\"2.0\",\"method\":\"tools/list\",\"id\":2,\"params\":{}}' | /Volumes/eyedisk/develop/oozoofrog/swiftmcp/.build/debug/swiftmcp mcp 2>/dev/null | python3 -c \"import sys,json; lines=[l.strip() for l in sys.stdin if l.strip()]; [print(json.loads(l).get('id'),json.loads(l).get('result',{}).get('tools',[{}]).__len__() if 'tools' in str(l) else '') for l in lines]\"",
+        "expect": "id 2 응답에서 tools 배열 길이 7 출력"
+      },
+      {
+        "action": "run_command",
+        "command": "echo 'not-valid-json' | /Volumes/eyedisk/develop/oozoofrog/swiftmcp/.build/debug/swiftmcp mcp 2>/dev/null; echo \"exit:$?\"",
+        "expect": "crash 없음 (JSON 에러 응답 또는 종료), exit:0 또는 exit:1 허용"
+      },
+      {
+        "action": "run_command",
+        "command": "printf '{\"jsonrpc\":\"2.0\",\"method\":\"initialize\",\"id\":1,\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{}}}\\n{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"id\":3,\"params\":{\"name\":\"search\",\"arguments\":{\"query\":\"yahoo\"}}}' | /Volumes/eyedisk/develop/oozoofrog/swiftmcp/.build/debug/swiftmcp mcp 2>/dev/null",
+        "expect": "id 3 응답에 swift-yf-tools 관련 내용 포함"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'run.*tool\\|install.*tool\\|search.*tool\\|list.*tool\\|init.*tool\\|cache_clean\\|registry_update' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -10",
+        "expect": "7개 tool 정의 (run, install, search, list, init, cache_clean, registry_update) 모두 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 18,
+    "scores": null
+  },
+  {
+    "id": "F019",
+    "category": "ui",
+    "description": "전체 명령에 ANSI 컬러 + 진행 표시 + 풍부한 도움말: stderr에 컬러 출력 (green=성공, red=에러, blue=정보, yellow=경고). 다운로드 진행률 표시. --help에 예제 포함. --json 플래그로 기계 판독 가능 JSON 출력 모드. tty 감지하여 비터미널 환경에서는 컬러/TUI 비활성화.",
+    "verification": "`swiftmcp list --json` 실행 시 파싱 가능한 JSON 출력 (python3 -c 'import json,sys; json.load(sys.stdin)' 통과). 비TTY 환경(pipe)에서 ANSI escape 코드 미출력. `--help` 출력에 사용 예제(Usage Example 또는 EXAMPLE 섹션) 포함.",
+    "verification_steps": [
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp list --json 2>/dev/null | python3 -c \"import json,sys; data=json.load(sys.stdin); print('VALID_JSON, items:', len(data) if isinstance(data, list) else 'object')\"",
+        "expect": "VALID_JSON 출력 (파싱 성공)"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp list 2>/dev/null | cat | grep -cE '\\x1b\\[' || echo '0'",
+        "expect": "0 출력 (비TTY pipe 환경에서 ANSI escape 미출력)"
+      },
+      {
+        "action": "run_command",
+        "command": "cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && .build/debug/swiftmcp --help 2>&1 | grep -iE 'example|usage.*swiftmcp|swiftmcp run' | head -5",
+        "expect": "사용 예제 포함 (example 또는 'swiftmcp run' 예시 라인 존재)"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'green\\|red.*error\\|blue.*info\\|yellow.*warn\\|Color.*reset\\|ANSI.*color' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "ANSI 컬러 정의 (green/red/blue/yellow) 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn '\\-\\-json\\|jsonOutput\\|outputJSON\\|json.*flag\\|json.*mode' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "--json 플래그 처리 로직 존재"
+      },
+      {
+        "action": "run_command",
+        "command": "grep -rn 'isatty\\|isTTY\\|tty.*detect\\|noColor\\|NO_COLOR' /Volumes/eyedisk/develop/oozoofrog/swiftmcp/Sources/ | head -5",
+        "expect": "isatty 감지로 비TTY 시 컬러 비활성화 로직 존재"
+      }
+    ],
+    "status": "pending",
+    "reference": null,
+    "priority": 19,
+    "scores": null
+  }
+]
