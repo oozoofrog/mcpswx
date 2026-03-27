@@ -663,7 +663,7 @@
         "expect": "--no-interactive 또는 유사 플래그 처리 로직 존재"
       }
     ],
-    "status": "pending",
+    "status": "built",
     "reference": null,
     "priority": 17,
     "scores": null
