@@ -347,7 +347,7 @@
         "expect": "test-dummy 항목이 목록에 표시됨"
       }
     ],
-    "status": "pending",
+    "status": "built",
     "reference": null,
     "priority": 9,
     "scores": null
