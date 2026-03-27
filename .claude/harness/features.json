@@ -152,7 +152,7 @@
         "expect": "GitHub Releases API 응답 파싱 필드 존재"
       }
     ],
-    "status": "pending",
+    "status": "built",
     "reference": null,
     "priority": 4,
     "scores": null
