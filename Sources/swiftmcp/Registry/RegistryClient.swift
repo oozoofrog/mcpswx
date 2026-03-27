@@ -38,6 +38,10 @@ nonisolated struct RegistryClient: Sendable {
             if let cached = loadCache() {
                 return cached.entry
             }
+            // 번들된 로컬 registry.json 폴백 (개발 환경 / 오프라인)
+            if let bundled = loadBundledRegistry() {
+                return bundled
+            }
             throw error
         }
     }
@@ -102,6 +106,29 @@ nonisolated struct RegistryClient: Sendable {
     private func isCacheValid(_ modificationDate: Date) -> Bool {
         let age = Date().timeIntervalSince(modificationDate)
         return age < cacheTTL
+    }
+
+    /// 실행 파일 인근의 번들된 registry.json 로드 (오프라인 폴백)
+    private func loadBundledRegistry() -> RegistryEntry? {
+        // 실행 파일과 같은 디렉토리에 registry.json이 있으면 로드
+        let execDir = URL(fileURLWithPath: CommandLine.arguments[0])
+            .deletingLastPathComponent().path
+        let paths = [
+            "\(execDir)/registry.json",
+            // 개발 환경: 프로젝트 루트
+            "\(execDir)/../../registry.json",
+            "\(execDir)/../../../registry.json",
+        ]
+
+        let decoder = JSONDecoder()
+        for path in paths {
+            let normalized = (path as NSString).standardizingPath
+            if let data = FileManager.default.contents(atPath: normalized),
+               let entry = try? decoder.decode(RegistryEntry.self, from: data) {
+                return entry
+            }
+        }
+        return nil
     }
 
     /// 레지스트리 JSON 데이터를 캐시 파일에 저장
