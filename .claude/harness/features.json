@@ -384,7 +384,7 @@
         "expect": "swiftmcp 자체 항목 출력 (self-hosting 레지스트리 확인)"
       }
     ],
-    "status": "pending",
+    "status": "built",
     "reference": null,
     "priority": 10,
     "scores": null
