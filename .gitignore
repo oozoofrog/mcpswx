@@ -1,0 +1,15 @@
+# Swift / SPM
+.build/
+.swiftpm/
+Package.resolved
+*.xcodeproj/
+xcuserdata/
+DerivedData/
+
+# macOS
+.DS_Store
+._*
+
+# Claude Code harness/review 산출물
+.claude/harness/
+.claude/review/
