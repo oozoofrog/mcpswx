@@ -1,11 +1,11 @@
 // swift-tools-version: 6.2
-// swiftmcp — Swift MCP 플랫폼 런타임/패키지 러너
+// mcpswx — Swift MCP 플랫폼 런타임/패키지 러너
 // Python uvx / Node.js npx에 대응하는 Swift 전용 MCP 서버 도구
 
 import PackageDescription
 
 let package = Package(
-    name: "swiftmcp",
+    name: "mcpswx",
     platforms: [
         .macOS(.v14)
     ],
@@ -18,11 +18,11 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "swiftmcp",
+            name: "mcpswx",
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
             ],
-            path: "Sources/swiftmcp",
+            path: "Sources/mcpswx",
             swiftSettings: [
                 // Swift 6 strict concurrency 모드 활성화
                 .swiftLanguageMode(.v6)
