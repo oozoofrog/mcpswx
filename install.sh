@@ -1,11 +1,11 @@
 #!/bin/bash
-# swiftmcp 설치 스크립트
-# curl -fsSL https://raw.githubusercontent.com/oozoofrog/swiftmcp/main/install.sh | bash
+# mcpswx 설치 스크립트
+# curl -fsSL https://raw.githubusercontent.com/oozoofrog/mcpswx/main/install.sh | bash
 set -euo pipefail
 
-REPO="oozoofrog/swiftmcp"
+REPO="oozoofrog/mcpswx"
 INSTALL_DIR="/usr/local/bin"
-BINARY_NAME="swiftmcp"
+BINARY_NAME="mcpswx"
 
 # 색상 (tty일 때만)
 if [ -t 1 ]; then
@@ -21,13 +21,13 @@ info()  { printf "${BOLD}==>${RESET} %s\n" "$1"; }
 error() { printf "${RED}error:${RESET} %s\n" "$1" >&2; exit 1; }
 
 # macOS 전용
-[ "$(uname -s)" = "Darwin" ] || error "swiftmcp는 현재 macOS만 지원합니다."
+[ "$(uname -s)" = "Darwin" ] || error "mcpswx는 현재 macOS만 지원합니다."
 
 # 아키텍처 감지
 ARCH="$(uname -m)"
 case "$ARCH" in
-  arm64)  ASSET="swiftmcp-macos-arm64.tar.gz" ;;
-  x86_64) ASSET="swiftmcp-macos-x86_64.tar.gz" ;;
+  arm64)  ASSET="mcpswx-macos-arm64.tar.gz" ;;
+  x86_64) ASSET="mcpswx-macos-x86_64.tar.gz" ;;
   *)      error "지원하지 않는 아키텍처: $ARCH" ;;
 esac
 
@@ -64,8 +64,8 @@ chmod +x "${INSTALL_DIR}/${BINARY_NAME}"
 # 검증
 if command -v "$BINARY_NAME" >/dev/null 2>&1; then
   VERSION=$("$BINARY_NAME" --version 2>/dev/null || echo "$LATEST_TAG")
-  printf "\n${GREEN}${BOLD}✓ swiftmcp ${VERSION} 설치 완료${RESET}\n"
-  echo "  실행: swiftmcp --help"
+  printf "\n${GREEN}${BOLD}✓ mcpswx ${VERSION} 설치 완료${RESET}\n"
+  echo "  실행: mcpswx --help"
 else
   printf "\n${GREEN}${BOLD}✓ 설치 완료${RESET} (${INSTALL_DIR}/${BINARY_NAME})\n"
   echo "  PATH에 ${INSTALL_DIR}이 포함되어 있는지 확인하세요."

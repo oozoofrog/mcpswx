@@ -15,10 +15,10 @@ jobs:
         include:
           - os: macos-15
             arch: arm64
-            artifact: swiftmcp-macos-arm64
+            artifact: mcpswx-macos-arm64
           - os: macos-15
             arch: x86_64
-            artifact: swiftmcp-macos-x86_64
+            artifact: mcpswx-macos-x86_64
 
     runs-on: ${{ matrix.os }}
 
@@ -47,14 +47,14 @@ jobs:
           ARTIFACT_NAME: ${{ matrix.artifact }}
         run: |
           if [ "$TARGET_ARCH" = "x86_64" ]; then
-            BINARY_PATH=".build/x86_64-apple-macosx/release/swiftmcp"
+            BINARY_PATH=".build/x86_64-apple-macosx/release/mcpswx"
           else
-            BINARY_PATH=".build/release/swiftmcp"
+            BINARY_PATH=".build/release/mcpswx"
           fi
           mkdir -p dist
-          cp "$BINARY_PATH" dist/swiftmcp
+          cp "$BINARY_PATH" dist/mcpswx
           cd dist
-          tar czf "${ARTIFACT_NAME}.tar.gz" swiftmcp
+          tar czf "${ARTIFACT_NAME}.tar.gz" mcpswx
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

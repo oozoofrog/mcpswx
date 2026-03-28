@@ -1,4 +1,4 @@
-# swiftmcp — AI Agent Instructions
+# mcpswx — AI Agent Instructions
 
 Swift MCP Platform tool — runtime, generator, and self-hosting MCP server for the Swift ecosystem.
 
@@ -15,11 +15,11 @@ Single executable with 8 subsystems:
 - `Commands/` — 8 ArgumentParser subcommands (run, install, list, search, cache, registry, init, mcp)
 - `Registry/` — JSON schema + GitHub raw URL fetch + local TTL cache
 - `Resolver/` — GitHub Releases API binary download + source fallback build
-- `Cache/` — `~/.swiftmcp/cache/` binary management
+- `Cache/` — `~/.mcpswx/cache/` binary management
 - `Runner/` — Process stdio passthrough (MCP server ↔ Claude direct communication)
-- `MCP/` — swiftmcp itself as MCP server (JSON-RPC 2.0, 7 tools)
+- `MCP/` — mcpswx itself as MCP server (JSON-RPC 2.0, 7 tools)
 - `TUI/` — ANSI escape colors, interactive menus, tty detection
-- `Templates/` — `swiftmcp init` project scaffolding
+- `Templates/` — `mcpswx init` project scaffolding
 
 ## Key Rules
 
@@ -32,10 +32,10 @@ Single executable with 8 subsystems:
 ## Usage
 
 ```bash
-swiftmcp run <name>       # Run MCP server from registry
-swiftmcp init             # Create new MCP server project (interactive)
-swiftmcp mcp              # Start swiftmcp as MCP server
-swiftmcp search <query>   # Search registry
-swiftmcp install <name>   # Install without running
-swiftmcp list             # List installed servers
+mcpswx run <name>       # Run MCP server from registry
+mcpswx init             # Create new MCP server project (interactive)
+mcpswx mcp              # Start mcpswx as MCP server
+mcpswx search <query>   # Search registry
+mcpswx install <name>   # Install without running
+mcpswx list             # List installed servers
 ```

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Release
 
-swiftmcp의 새 버전을 릴리스합니다.
+mcpswx의 새 버전을 릴리스합니다.
 
 ## 사용법
 

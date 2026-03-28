@@ -1,6 +1,6 @@
 # MCP 서버 레이어 규칙
 
-swiftmcp 자체를 MCP 서버로 제공하는 JSON-RPC 2.0 구현.
+mcpswx 자체를 MCP 서버로 제공하는 JSON-RPC 2.0 구현.
 
 ## 구조
 

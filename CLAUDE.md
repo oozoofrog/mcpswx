@@ -1,4 +1,4 @@
-# swiftmcp
+# mcpswx
 
 Swift MCP(Model Context Protocol) 서버 생태계를 위한 플랫폼 도구.
 Python uvx / Node.js npx에 대응하는 Swift 전용 MCP 런타임.
@@ -14,15 +14,15 @@ swift build -c release   # 릴리스 빌드
 ## 아키텍처
 
 ```
-swiftmcp (단일 executable)
+mcpswx (단일 executable)
 ├── Commands/     — ArgumentParser 서브커맨드 8개 (run, install, list, search, cache, registry, init, mcp)
 ├── Registry/     — 레지스트리 JSON 스키마 + GitHub raw URL fetch + 로컬 TTL 캐시
 ├── Resolver/     — GitHub Releases API binary 추출 + 소스 폴백 빌드
-├── Cache/        — ~/.swiftmcp/cache/ 바이너리 다운로드·압축해제·권한 관리
+├── Cache/        — ~/.mcpswx/cache/ 바이너리 다운로드·압축해제·권한 관리
 ├── Runner/       — Process stdio passthrough (MCP 서버 ↔ Claude 직접 통신)
-├── MCP/          — swiftmcp 자체를 MCP 서버로 제공 (JSON-RPC 2.0, 7개 tool)
+├── MCP/          — mcpswx 자체를 MCP 서버로 제공 (JSON-RPC 2.0, 7개 tool)
 ├── TUI/          — ANSI escape 컬러·박스·메뉴, tty 감지, 진행률 표시
-└── Templates/    — swiftmcp init 프로젝트 생성 템플릿
+└── Templates/    — mcpswx init 프로젝트 생성 템플릿
 ```
 
 ## 핵심 규칙
@@ -38,9 +38,9 @@ swiftmcp (단일 executable)
 ## 레지스트리
 
 - 위치: 저장소 루트 `registry.json`
-- URL: `https://raw.githubusercontent.com/oozoofrog/swiftmcp/main/registry.json`
-- 로컬 캐시: `~/.swiftmcp/registry/registry.json` (TTL 1시간)
-- self-hosting: swiftmcp 자체도 레지스트리에 등록
+- URL: `https://raw.githubusercontent.com/oozoofrog/mcpswx/main/registry.json`
+- 로컬 캐시: `~/.mcpswx/registry/registry.json` (TTL 1시간)
+- self-hosting: mcpswx 자체도 레지스트리에 등록
 
 ## 알려진 이슈
 

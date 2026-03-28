@@ -1,6 +1,6 @@
 # Templates 레이어 규칙
 
-`swiftmcp init` 명령이 생성하는 MCP 서버 프로젝트 템플릿.
+`mcpswx init` 명령이 생성하는 MCP 서버 프로젝트 템플릿.
 
 ## 구조
 
