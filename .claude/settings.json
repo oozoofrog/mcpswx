@@ -3,7 +3,7 @@
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "command": "filepath=\"$CLAUDE_TOOL_ARG_FILE_PATH\"; if [[ \"$filepath\" == *.swift ]]; then cd /Volumes/eyedisk/develop/oozoofrog/swiftmcp && swift build 2>&1 | tail -5; fi"
+        "command": "filepath=\"$CLAUDE_TOOL_ARG_FILE_PATH\"; if [[ \"$filepath\" == *.swift ]]; then cd /Volumes/eyedisk/develop/oozoofrog/mcpswx && swift build 2>&1 | tail -5; fi"
       }
     ],
     "PreToolUse": [
