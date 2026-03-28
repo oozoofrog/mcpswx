@@ -8,7 +8,7 @@ Python uvx / Node.js npx에 대응하는 Swift 전용 MCP 런타임.
 ```bash
 swift build              # 디버그 빌드
 swift build -c release   # 릴리스 빌드
-swift test               # 테스트 실행 (아직 없음)
+# swift test — 테스트 타겟 미구성 (Package.swift에 테스트 타겟 없음)
 ```
 
 ## 아키텍처

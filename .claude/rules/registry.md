@@ -4,7 +4,7 @@
 
 ## 구조
 
-- `RegistrySchema.swift` — `RegistryData`, `ServerEntry`, `PlatformEntry`, `SourceEntry` Codable 스키마
+- `RegistrySchema.swift` — `RegistryEntry`, `ServerEntry`, `PlatformEntry`, `SourceEntry` Codable 스키마
 - `RegistryClient.swift` — GitHub raw URL fetch, `~/.swiftmcp/registry/` 캐시, TTL 1시간
 
 ## 패턴

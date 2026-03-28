@@ -9,7 +9,7 @@
 ## 주의사항
 
 - 생성되는 코드는 Swift 6.2 strict concurrency를 준수해야 함
-- `@unchecked Sendable`, `DispatchSemaphore.wait()` 사용 금지 (#3)
+- `@unchecked Sendable`, `DispatchSemaphore.wait()` 사용 금지 (#3 — 현재 `mcpProtocolSwift()` 템플릿에 미수정 상태로 잔존, 해결 필요)
 - `actor` 또는 `nonisolated struct` 패턴 사용
-- 생성 후 `swift build` 자동 검증
+- 생성 완료 후 사용자에게 `swift build` 실행 안내 메시지 출력 (자동 빌드 실행 없음)
 - `--non-interactive` 플래그로 비대화형 모드 지원
