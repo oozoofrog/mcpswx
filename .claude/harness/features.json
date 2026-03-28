@@ -31,10 +31,16 @@
         "expect": "에러 0건 (경고는 허용)"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 1,
-    "scores": null
+    "scores": {
+      "functionality": 9,
+      "codeQuality": 9,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 9.0
+    }
   },
   {
     "id": "F002",
@@ -68,10 +74,16 @@
         "expect": "version, servers, repo, description, executable, platforms, source 필드 모두 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 2,
-    "scores": null
+    "scores": {
+      "functionality": 9,
+      "codeQuality": 9,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 9.0
+    }
   },
   {
     "id": "F003",
@@ -110,10 +122,16 @@
         "expect": "네트워크 실패 시 캐시 폴백 로직 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 3,
-    "scores": null
+    "scores": {
+      "functionality": 8,
+      "codeQuality": 8,
+      "designQuality": 8,
+      "interactionQuality": null,
+      "weightedAverage": 8.0
+    }
   },
   {
     "id": "F004",
@@ -152,10 +170,16 @@
         "expect": "GitHub Releases API 응답 파싱 필드 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 4,
-    "scores": null
+    "scores": {
+      "functionality": 9,
+      "codeQuality": 9,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 9.0
+    }
   },
   {
     "id": "F005",
@@ -194,10 +218,16 @@
         "expect": "압축 해제/다운로드 실패 에러 케이스 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 5,
-    "scores": null
+    "scores": {
+      "functionality": 8,
+      "codeQuality": 8,
+      "designQuality": 8,
+      "interactionQuality": null,
+      "weightedAverage": 8.0
+    }
   },
   {
     "id": "F006",
@@ -236,10 +266,16 @@
         "expect": "run 커맨드 도움말 출력 (exit:0 또는 exit:1 허용, 단 crash 없음)"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 6,
-    "scores": null
+    "scores": {
+      "functionality": 10,
+      "codeQuality": 10,
+      "designQuality": 10,
+      "interactionQuality": null,
+      "weightedAverage": 10.0
+    }
   },
   {
     "id": "F007",
@@ -273,10 +309,16 @@
         "expect": "캐시 hit 시 즉시 실행 분기 로직 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 7,
-    "scores": null
+    "scores": {
+      "functionality": 9,
+      "codeQuality": 8,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 8.7
+    }
   },
   {
     "id": "F008",
@@ -310,10 +352,16 @@
         "expect": "에러 메시지 출력 + exit:1 (crash 없음)"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 8,
-    "scores": null
+    "scores": {
+      "functionality": 9,
+      "codeQuality": 9,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 9.0
+    }
   },
   {
     "id": "F009",
@@ -347,10 +395,16 @@
         "expect": "test-dummy 항목이 목록에 표시됨"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 9,
-    "scores": null
+    "scores": {
+      "functionality": 7,
+      "codeQuality": 7,
+      "designQuality": 8,
+      "interactionQuality": null,
+      "weightedAverage": 7.3
+    }
   },
   {
     "id": "F010",
@@ -384,10 +438,16 @@
         "expect": "swiftmcp 자체 항목 출력 (self-hosting 레지스트리 확인)"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 10,
-    "scores": null
+    "scores": {
+      "functionality": 10,
+      "codeQuality": 9,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 9.3
+    }
   },
   {
     "id": "F011",
@@ -421,10 +481,16 @@
         "expect": "확인 프롬프트 출력 또는 비TTY 환경에서 abort 메시지 (crash 없음)"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 11,
-    "scores": null
+    "scores": {
+      "functionality": 9,
+      "codeQuality": 9,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 9.0
+    }
   },
   {
     "id": "F012",
@@ -458,10 +524,16 @@
         "expect": "캐시 무시 강제 갱신 로직 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 12,
-    "scores": null
+    "scores": {
+      "functionality": 7,
+      "codeQuality": 7,
+      "designQuality": 8,
+      "interactionQuality": null,
+      "weightedAverage": 7.3
+    }
   },
   {
     "id": "F013",
@@ -503,7 +575,13 @@
     "status": "built",
     "reference": null,
     "priority": 13,
-    "scores": null
+    "scores": {
+      "functionality": 7,
+      "codeQuality": 6,
+      "designQuality": 7,
+      "interactionQuality": null,
+      "weightedAverage": 6.6
+    }
   },
   {
     "id": "F014",
@@ -542,10 +620,16 @@
         "expect": "macos-arm64, macos-x86_64 플랫폼 키 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 14,
-    "scores": null
+    "scores": {
+      "functionality": 9,
+      "codeQuality": 8,
+      "designQuality": 8,
+      "interactionQuality": null,
+      "weightedAverage": 8.5
+    }
   },
   {
     "id": "F015",
@@ -584,10 +668,16 @@
         "expect": "'Package not found' + 'swiftmcp search' 안내 메시지 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 15,
-    "scores": null
+    "scores": {
+      "functionality": 10,
+      "codeQuality": 9,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 9.3
+    }
   },
   {
     "id": "F016",
@@ -626,10 +716,16 @@
         "expect": "정리 완료 (검증 후 임시 디렉토리 삭제)"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 16,
-    "scores": null
+    "scores": {
+      "functionality": 9,
+      "codeQuality": 5,
+      "designQuality": 8,
+      "interactionQuality": null,
+      "weightedAverage": 7.1
+    }
   },
   {
     "id": "F017",
@@ -663,10 +759,16 @@
         "expect": "--no-interactive 또는 유사 플래그 처리 로직 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 17,
-    "scores": null
+    "scores": {
+      "functionality": 8,
+      "codeQuality": 7,
+      "designQuality": 8,
+      "interactionQuality": null,
+      "weightedAverage": 7.7
+    }
   },
   {
     "id": "F018",
@@ -705,10 +807,16 @@
         "expect": "7개 tool 정의 (run, install, search, list, init, cache_clean, registry_update) 모두 존재"
       }
     ],
-    "status": "built",
+    "status": "verified",
     "reference": null,
     "priority": 18,
-    "scores": null
+    "scores": {
+      "functionality": 10,
+      "codeQuality": 9,
+      "designQuality": 9,
+      "interactionQuality": null,
+      "weightedAverage": 9.3
+    }
   },
   {
     "id": "F019",
@@ -750,6 +858,12 @@
     "status": "built",
     "reference": null,
     "priority": 19,
-    "scores": null
+    "scores": {
+      "functionality": 6,
+      "codeQuality": 6,
+      "designQuality": 7,
+      "interactionQuality": null,
+      "weightedAverage": 6.3
+    }
   }
 ]

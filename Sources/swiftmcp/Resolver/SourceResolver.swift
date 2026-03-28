@@ -38,10 +38,33 @@ nonisolated struct SourceResolver: Sendable {
             buildDir = "\(tmpDir)/\(source.buildPath)"
         }
 
-        // swift build -c release
+        // buildCommand 파싱: nil이면 기본값 "swift build -c release" 사용
+        let rawCommand = source.buildCommand.isEmpty
+            ? "swift build -c release"
+            : source.buildCommand
+        // 공백 기준으로 split하여 인수 배열 생성
+        var buildArgs = rawCommand.split(separator: " ").map(String.init)
+        guard let buildExecutableName = buildArgs.first else {
+            throw SwiftMCPError.sourceBuildFailed("buildCommand 파싱 실패: '\(rawCommand)'")
+        }
+        buildArgs.removeFirst()
+
+        // 실행 파일 경로 결정: swift 또는 절대 경로
+        let buildExecutable: String
+        if buildExecutableName.hasPrefix("/") {
+            buildExecutable = buildExecutableName
+        } else {
+            buildExecutable = "/usr/bin/\(buildExecutableName)"
+        }
+
+        // --product 인수가 buildCommand에 없으면 자동 추가
+        if !buildArgs.contains("--product") {
+            buildArgs += ["--product", source.product]
+        }
+
         try await runProcess(
-            executable: "/usr/bin/swift",
-            arguments: ["build", "-c", "release", "--product", source.product],
+            executable: buildExecutable,
+            arguments: buildArgs,
             workingDirectory: buildDir
         )
 
